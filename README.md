@@ -1,5 +1,12 @@
 # Disaster Response Pipeline Project
 
+### Motivation:
+
+I have applied Data Engineering skills to analyze disaster data from Figure Eight and built ML model that classifies disaster messages.
+
+### File Structure:
+
+
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
 
