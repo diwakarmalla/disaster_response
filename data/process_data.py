@@ -40,6 +40,7 @@ def clean_data(df):
     category_colnames = row.apply(lambda x: x.split('-')[0])
     # rename the columns of `categories`
     categories.columns = category_colnames
+    categories.related.loc[categories.related == 'related-2'] = 'related-1'
     
     for column in categories:
     # set each value to be the last character of the string

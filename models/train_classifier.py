@@ -5,6 +5,8 @@ import pickle
 from sqlalchemy import create_engine
 import sys
 import re
+import warnings
+warnings.filterwarnings("ignore")
 
 # import NLP libraries
 import re
@@ -18,11 +20,16 @@ nltk.download('wordnet') # download for lemmatization
 
 # import sklearn
 from sklearn.pipeline import Pipeline
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.svm import LinearSVC
+from sklearn.multioutput import MultiOutputClassifier
 
 
 def load_data(database_filepath, table_name='messages_categories'):
@@ -82,14 +89,17 @@ def build_model():
     """
     Returns the pipeline
     """
-    # build NLP pipeline - count words, tf-idf, multiple output classifier
+    # build NLP pipeline - count words, tf-idf and AdaBoostClassifier. 
     pipeline = Pipeline([
-        ('vec', CountVectorizer(tokenizer=tokenize)),
+        ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(n_estimators = 100, n_jobs = -1)))
+        ('clf', MultiOutputClassifier(OneVsRestClassifier(LinearSVC(random_state = 0))))
     ])
-    
-    return pipeline
+    parameters = {
+                'clf__estimator__estimator__C': [1, 2, 5]
+             }
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1, verbose=2)
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
